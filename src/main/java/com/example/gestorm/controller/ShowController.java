@@ -1,6 +1,12 @@
 package com.example.gestorm.controller;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +25,31 @@ public class ShowController {
     }
 
     @GetMapping
-    public List<Show> all() {
-        return showRepository.findAll();
+    public Page<Show> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int pageSize,
+            @RequestParam(defaultValue = "title,asc") String sort,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search) {
+
+        String[] sortParts = sort.split(",");
+        Sort sortObj = Sort.by(sortParts[0]);
+        if (sortParts.length > 1 && sortParts[1].equalsIgnoreCase("desc")) {
+            sortObj = sortObj.descending();
+        }
+        Pageable pageable = PageRequest.of(page, pageSize, sortObj);
+        return showRepository.findAllFiltered(type, status, search, pageable);
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Long> stats() {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("serie", showRepository.countByType("serie"));
+        stats.put("anime", showRepository.countByType("anime"));
+        stats.put("pelicula", showRepository.countByType("pelicula"));
+        stats.put("total", stats.get("serie") + stats.get("anime") + stats.get("pelicula"));
+        return stats;
     }
 
     @GetMapping("/{id}")
