@@ -65,7 +65,11 @@ function renderTable(shows) {
   <td>${show.title}</td>\
   <td>${show.type}</td>\
   <td>${show.status}</td>\
+
+  <td>${show.description || ''}</td>\
+
   <td>-</td>\
+
   <td class="text-end">\
     <div class="btn-group btn-group-sm">\
       <button class="btn btn-outline-secondary" disabled>Ver</button>\
