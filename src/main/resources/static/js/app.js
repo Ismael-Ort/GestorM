@@ -61,10 +61,15 @@ function renderTable(shows) {
     shows.forEach(show => {
         tbody.innerHTML += `\
 <tr>\
+  <td><img src="https://via.placeholder.com/60x90?text=No+Img" class="img-fluid" loading="lazy"></td>\
   <td>${show.title}</td>\
   <td>${show.type}</td>\
   <td>${show.status}</td>\
+
   <td>${show.description || ''}</td>\
+
+  <td>-</td>\
+
   <td class="text-end">\
     <div class="btn-group btn-group-sm">\
       <button class="btn btn-outline-secondary" disabled>Ver</button>\
