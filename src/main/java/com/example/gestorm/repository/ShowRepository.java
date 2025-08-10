@@ -18,5 +18,7 @@ public interface ShowRepository extends JpaRepository<Show, Long> {
                                @Param("search") String search,
                                Pageable pageable);
 
-    long countByType(String type);
+    long countByTypeIgnoreCase(String type);
+
+    long countByTypeAndStatusIgnoreCase(String type, String status);
 }

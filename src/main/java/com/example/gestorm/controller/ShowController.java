@@ -43,13 +43,22 @@ public class ShowController {
     }
 
     @GetMapping("/stats")
-    public Map<String, Long> stats() {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("serie", showRepository.countByType("serie"));
-        stats.put("anime", showRepository.countByType("anime"));
-        stats.put("pelicula", showRepository.countByType("pelicula"));
-        stats.put("total", stats.get("serie") + stats.get("anime") + stats.get("pelicula"));
+    public Map<String, Map<String, Long>> stats() {
+        Map<String, Map<String, Long>> stats = new HashMap<>();
+        stats.put("pelicula", buildTypeStats("pelicula"));
+        stats.put("serie", buildTypeStats("serie"));
+        stats.put("anime", buildTypeStats("anime"));
         return stats;
+    }
+
+    private Map<String, Long> buildTypeStats(String type) {
+        Map<String, Long> m = new HashMap<>();
+        m.put("total", showRepository.countByTypeIgnoreCase(type));
+        m.put("visto", showRepository.countByTypeAndStatusIgnoreCase(type, "visto"));
+        m.put("viendo", showRepository.countByTypeAndStatusIgnoreCase(type, "viendo"));
+        m.put("favorito", showRepository.countByTypeAndStatusIgnoreCase(type, "favorito"));
+        m.put("pendiente", showRepository.countByTypeAndStatusIgnoreCase(type, "pendiente"));
+        return m;
     }
 
     @GetMapping("/{id}")

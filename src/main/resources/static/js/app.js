@@ -24,15 +24,16 @@ async function loadStats() {
     const stats = await res.json();
     const cardContainer = document.getElementById('cards');
     cardContainer.innerHTML = '';
-    ['serie', 'anime', 'pelicula'].forEach(type => {
-        const name = type.charAt(0).toUpperCase() + type.slice(1);
-        const count = stats[type] || 0;
+    const names = { pelicula: 'Películas', serie: 'Series', anime: 'Anime' };
+    ['pelicula', 'serie', 'anime'].forEach(type => {
+        const data = stats[type] || {};
         cardContainer.innerHTML += `\
 <div class="col-12 col-md-4">\
   <div class="card text-center mb-3 shadow-sm">\
     <div class="card-body">\
-      <h5 class="card-title">${name}</h5>\
-      <p class="card-text fs-4">${count}</p>\
+      <h5 class="card-title">Total ${names[type]}</h5>\
+      <p class="card-text fs-4">${data.total || 0}</p>\
+      <p class="small text-muted">${data.visto || 0} vistos</p>\
     </div>\
   </div>\
 </div>`;
@@ -59,17 +60,13 @@ function renderTable(shows) {
     const tbody = document.querySelector('#showsTable tbody');
     tbody.innerHTML = '';
     shows.forEach(show => {
+        const badgeClass = show.status === 'visto' ? 'bg-dark' : 'bg-secondary';
         tbody.innerHTML += `\
 <tr>\
-  <td><img src="https://via.placeholder.com/60x90?text=No+Img" class="img-fluid" loading="lazy"></td>\
   <td>${show.title}</td>\
   <td>${show.type}</td>\
-  <td>${show.status}</td>\
-
+  <td><span class="badge ${badgeClass}">${show.status}</span></td>\
   <td>${show.description || ''}</td>\
-
-  <td>-</td>\
-
   <td class="text-end">\
     <div class="btn-group btn-group-sm">\
       <button class="btn btn-outline-secondary" disabled>Ver</button>\
@@ -154,6 +151,27 @@ document.getElementById('pageSize').addEventListener('change', e => {
     state.pageSize = Number(e.target.value);
     state.page = 0;
     loadShows();
+});
+
+async function addShow(type) {
+    const title = prompt('Título');
+    if (!title) return;
+    const status = prompt('Estado (viendo/visto/favorito/pendiente)', 'pendiente') || 'pendiente';
+    const description = prompt('Descripción', '') || '';
+    await fetch('/api/shows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, type, status, description })
+    });
+    loadStats();
+    if (state.type === type) loadShows();
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+    if (state.type) addShow(state.type);
+});
+document.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', () => addShow(btn.dataset.add));
 });
 
 loadStats();

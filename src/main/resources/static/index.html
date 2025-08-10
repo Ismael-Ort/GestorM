@@ -2,77 +2,138 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>GestorM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GestorM</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="p-3">
-    <h1 class="mb-4">Gestor de Series y Películas</h1>
-
-    <div class="row mb-4" id="cards"></div>
-
-    <div class="d-flex flex-wrap gap-2 mb-3">
-        <input id="search" class="form-control" placeholder="Buscar título">
-
-        <select id="typeFilter" class="form-select">
-            <option value="">Todos los tipos</option>
-            <option value="serie">Serie</option>
-            <option value="anime">Anime</option>
-            <option value="pelicula">Película</option>
-        </select>
-
-        <select id="statusFilter" class="form-select">
-            <option value="">Todos los estados</option>
-            <option value="viendo">Viendo</option>
-            <option value="visto">Visto</option>
-            <option value="favorito">Favorito</option>
-            <option value="pendiente">Pendiente</option>
-        </select>
-
-        <select id="sort" class="form-select">
-            <option value="title,asc">Título A→Z</option>
-            <option value="title,desc">Título Z→A</option>
-        </select>
-
-        <select id="pageSize" class="form-select">
-            <option value="10">10</option>
-            <option value="20" selected>20</option>
-            <option value="50">50</option>
-        </select>
-    </div>
-
-    <div class="table-responsive mb-3">
-        <table class="table table-striped align-middle" id="showsTable">
-            <thead>
-                <tr>
-
-                    <th>Título</th>
-                    <th>Tipo</th>
-                    <th>Estado</th>
-                    <th>Descripción</th>
-
-                    <th>Portada</th>
-                    <th>Título</th>
-                    <th>Tipo</th>
-                    <th>Estado</th>
-                    <th>Duración/Episodios</th>
-
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center">
-        <div id="rangeInfo" class="small text-body-secondary"></div>
-        <nav>
-            <ul class="pagination mb-0" id="pagination"></ul>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <aside class="sidebar bg-light border-end d-flex flex-column p-3">
+        <h1 class="fs-4 mb-0">Media Manager</h1>
+        <p class="text-muted">Gestiona tu colección</p>
+        <nav id="menu" class="nav nav-pills flex-column gap-1">
+            <a href="?type=pelicula" class="nav-link d-flex align-items-center gap-2" data-type="pelicula">
+                <span>🎬</span><span>Películas</span>
+            </a>
+            <a href="?type=serie" class="nav-link d-flex align-items-center gap-2" data-type="serie">
+                <span>📺</span><span>Series</span>
+            </a>
+            <a href="?type=anime" class="nav-link d-flex align-items-center gap-2" data-type="anime">
+                <span>⚡</span><span>Anime</span>
+            </a>
+            <a href="/" class="nav-link d-flex align-items-center gap-2" data-type="">
+                <span>🗄️</span><span>Base de Datos</span>
+            </a>
         </nav>
-    </div>
+    </aside>
 
-    <script src="js/app.js"></script>
+    <!-- Main content -->
+    <div class="flex-grow-1 d-flex flex-column">
+        <header class="topbar d-flex justify-content-between align-items-center p-3 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-outline-secondary d-md-none" id="menuToggle">☰</button>
+                <h2 class="h5 m-0 d-flex align-items-center gap-2">
+                    <span id="sectionIcon"></span>
+                    <span id="sectionName"></span>
+                </h2>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <input id="search" class="form-control" placeholder="Buscar...">
+                <button id="addBtn" class="btn btn-dark">+ Agregar</button>
+            </div>
+        </header>
+
+        <main class="p-3 flex-grow-1 overflow-auto">
+            <!-- Dashboard -->
+            <section id="dashboard" class="mb-4">
+                <div class="row g-3 mb-4" id="cards"></div>
+                <div class="card p-3 shadow-sm">
+                    <h5 class="mb-3">Administrador de Base de Datos</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-dark btn-sm" data-add="pelicula">+ Agregar Película</button>
+                        <button class="btn btn-dark btn-sm" data-add="serie">+ Agregar Serie</button>
+                        <button class="btn btn-dark btn-sm" data-add="anime">+ Agregar Anime</button>
+                        <button class="btn btn-outline-secondary btn-sm">⎯ Exportar Datos</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Listing -->
+            <section id="listing">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div id="rangeInfo" class="small text-body-secondary"></div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <select id="typeFilter" class="d-none"></select>
+                        <select id="statusFilter" class="form-select form-select-sm">
+                            <option value="">Todos los estados</option>
+                            <option value="viendo">Viendo</option>
+                            <option value="visto">Visto</option>
+                            <option value="favorito">Favorito</option>
+                            <option value="pendiente">Pendiente</option>
+                        </select>
+                        <select id="sort" class="form-select form-select-sm">
+                            <option value="title,asc">Título A→Z</option>
+                            <option value="title,desc">Título Z→A</option>
+                        </select>
+                        <select id="pageSize" class="form-select form-select-sm">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive mb-3">
+                    <table class="table table-striped align-middle w-100" id="showsTable">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Descripción</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <ul class="pagination" id="pagination"></ul>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+const sections = {
+    pelicula: { name: 'Películas', icon: '🎬', search: 'Buscar películas…', add: 'película' },
+    serie: { name: 'Series', icon: '📺', search: 'Buscar series…', add: 'serie' },
+    anime: { name: 'Anime', icon: '⚡', search: 'Buscar anime…', add: 'anime' },
+    '': { name: 'Base de Datos', icon: '🗄️', search: '', add: '' }
+};
+function applySection() {
+    const type = state.type;
+    const cfg = sections[type] || sections[''];
+    document.getElementById('sectionName').textContent = cfg.name;
+    document.getElementById('sectionIcon').textContent = cfg.icon;
+    document.getElementById('search').placeholder = cfg.search;
+    const addBtn = document.getElementById('addBtn');
+    addBtn.textContent = cfg.add ? `+ Agregar ${cfg.add}` : '+ Agregar';
+    addBtn.disabled = !cfg.add;
+    document.getElementById('dashboard').classList.toggle('d-none', !!type);
+    document.getElementById('listing').classList.toggle('d-none', !type);
+    document.querySelectorAll('#menu a').forEach(a => {
+        a.classList.toggle('active', a.dataset.type === type);
+    });
+}
+applySection();
+
+document.getElementById('menuToggle').addEventListener('click', () => {
+    document.querySelector('.sidebar').classList.toggle('show');
+});
+</script>
 </body>
 </html>
-

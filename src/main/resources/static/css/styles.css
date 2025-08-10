@@ -5,3 +5,26 @@ body {
 #showsTable tbody tr:hover {
     background-color: #f1f3f5;
 }
+
+.sidebar {
+    width: 250px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        height: 100%;
+        z-index: 1030;
+        transition: left 0.3s ease;
+    }
+    .sidebar.show {
+        left: 0;
+    }
+}
+
+.sidebar .nav-link.active {
+    background-color: #e9ecef;
+    font-weight: 500;
+}
