@@ -52,9 +52,15 @@
                 <div class="card p-3 shadow-sm">
                     <h5 class="mb-3">Administrador de Base de Datos</h5>
                     <div class="d-flex flex-wrap gap-2">
+
+                        <button class="btn btn-dark btn-sm" data-add="pelicula">+ Agregar Película</button>
+                        <button class="btn btn-dark btn-sm" data-add="serie">+ Agregar Serie</button>
+                        <button class="btn btn-dark btn-sm" data-add="anime">+ Agregar Anime</button>
+
                         <button class="btn btn-dark btn-sm">+ Agregar Película</button>
                         <button class="btn btn-dark btn-sm">+ Agregar Serie</button>
                         <button class="btn btn-dark btn-sm">+ Agregar Anime</button>
+
                         <button class="btn btn-outline-secondary btn-sm">⎯ Exportar Datos</button>
                     </div>
                 </div>
@@ -122,6 +128,10 @@ function applySection() {
     document.getElementById('search').placeholder = cfg.search;
     const addBtn = document.getElementById('addBtn');
     addBtn.textContent = cfg.add ? `+ Agregar ${cfg.add}` : '+ Agregar';
+
+    addBtn.disabled = !cfg.add;
+
+
     document.getElementById('dashboard').classList.toggle('d-none', !!type);
     document.getElementById('listing').classList.toggle('d-none', !type);
     document.querySelectorAll('#menu a').forEach(a => {
